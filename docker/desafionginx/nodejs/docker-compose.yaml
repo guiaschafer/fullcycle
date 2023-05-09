@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  app:
+    build: 
+      context: .
+    image: guischafer/desafionodejs-nodeapp:dev  
+    container_name: app
+    # entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
+    networks:
+      - desafio-nodejs
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/usr/src/app
+    tty: true
+    depends_on: 
+      - db
+    
+  db:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name:  db
+    restart: always
+    tty: true
+    volumes:
+      - ../mysql:/var/lib/mysql 
+    environment:
+      - MYSQL_DATABASE=desafionodejs
+      - MYSQL_ROOT_PASSWORD=root
+      # - MYSQL_USER=root
+    networks:
+      - desafio-nodejs
+
+networks:
+  desafio-nodejs:
+    driver: bridge
